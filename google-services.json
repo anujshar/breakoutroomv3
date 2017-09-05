@@ -1,0 +1,99 @@
+{
+  "project_info": {
+    "project_number": "441986395657",
+    "firebase_url": "https://friendlychat-356ca.firebaseio.com",
+    "project_id": "friendlychat-356ca",
+    "storage_bucket": "friendlychat-356ca.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441986395657:android:64e58dacc0483faa",
+        "android_client_info": {
+          "package_name": "com.google.firebase.udacity.friendlychat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "441986395657-v7sm88pn90hrndj8dsocs40pjgltiq6o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.google.firebase.udacity.friendlychat",
+            "certificate_hash": "4f98d2cdfea5453c14d5aad48aedc16f434a0733"
+          }
+        },
+        {
+          "client_id": "441986395657-ncdna13efkv6ttnbu3jhc8gl5f3dd9mf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRULN1TDXRLWhhOuz9jUBwmMCJLWLcwAQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441986395657-ncdna13efkv6ttnbu3jhc8gl5f3dd9mf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:441986395657:android:b8f215c0c0cf461e",
+        "android_client_info": {
+          "package_name": "com.aks.group.breakout.room"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "441986395657-ss3dmv6t82kh77oin3vlrq4hedac7v5t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.aks.group.breakout.room",
+            "certificate_hash": "4f98d2cdfea5453c14d5aad48aedc16f434a0733"
+          }
+        },
+        {
+          "client_id": "441986395657-ncdna13efkv6ttnbu3jhc8gl5f3dd9mf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCRULN1TDXRLWhhOuz9jUBwmMCJLWLcwAQ"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "441986395657-ncdna13efkv6ttnbu3jhc8gl5f3dd9mf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
