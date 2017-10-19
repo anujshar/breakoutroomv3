@@ -15,7 +15,9 @@
  */
 package com.aks.group.breakout.room;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -65,6 +67,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (shouldAskPermissions()) {
+            askPermissions();
+        }
 
 
         mFireDatabase = FirebaseDatabase.getInstance();
@@ -79,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize message ListView and its adapter
         List<GroupSummary> allGroups = new ArrayList<>();
-        mGroupSummaryAdapter = new GroupSummaryAdapter(this, R.layout.item_message, allGroups);
+        mGroupSummaryAdapter = new GroupSummaryAdapter(this, R.layout.item_group_summary, allGroups);
         mGroupListView.setAdapter(mGroupSummaryAdapter);
         mGroupListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                                   @Override
@@ -125,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
                     ArrayList<String> scopes = new ArrayList<String>();
                     scopes.add("https://www.googleapis.com/auth/contacts");
                     scopes.add("https://www.googleapis.com/auth/drive");
+                    scopes.add("https://www.googleapis.com/auth/calendar");
 
                     startActivityForResult(
                             AuthUI.getInstance()
@@ -195,6 +201,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         super.onResume();
         mFirebaseAuth.addAuthStateListener(mAuthListener);
+    }
+
+    protected boolean shouldAskPermissions() {
+        return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+    }
+
+    @TargetApi(23)
+    protected void askPermissions() {
+        String[] permissions = {
+                "android.permission.READ_EXTERNAL_STORAGE",
+                "android.permission.WRITE_EXTERNAL_STORAGE",
+                "android.permission.CAMERA"
+        };
+        int requestCode = 200;
+        requestPermissions(permissions, requestCode);
     }
 
     private void onSignedInInitialize(String username, String userid)

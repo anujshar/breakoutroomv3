@@ -44,19 +44,26 @@ tools:context="com.aks.group.breakout.room.MainActivity">
 
     <Button
         android:id="@+id/sendButton"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:enabled="false"
-        android:text="@string/send_button_label"/>
+        android:text="S"/>
 
     <Button
         android:id="@+id/docButton"
-        android:layout_width="wrap_content"
+        android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:enabled="true"
-        android:text="Docs"/>
+        android:text="D"/>
+    <Button
+        android:id="@+id/calButton"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:enabled="true"
+        android:text="C"/>
 
 </LinearLayout>
 

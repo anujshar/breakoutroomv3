@@ -1,3 +1,4 @@
+/*
 package com.aks.group.breakout.room;
 
 import android.accounts.AccountManager;
@@ -84,7 +85,7 @@ import java.util.List;
 import pub.devrel.easypermissions.AfterPermissionGranted;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks {
 
     public static final String ANONYMOUS = "anonymous";
     public static final int DEFAULT_MSG_LENGTH_LIMIT = 1000;
@@ -166,8 +167,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View view) {
                 //fire an intent to show imagepicker
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            //    intent.setType("image/jpeg");
-            //    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                //    intent.setType("image/jpeg");
+                //    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
                 startActivityForResult(intent, RC_PHOTO_PICKER);
             }
         });
@@ -176,12 +177,13 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 mDocsButton.setEnabled(false);
-               // getResultsFromApi();
+                // getResultsFromApi();
 
                 Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("*/*");
+                intent.setType("**/
+/*");
                 startActivityForResult(intent,PICKFILE_RESULT_CODE);
-               // CreateFolder("breakout room group chat");
+                // CreateFolder("breakout room group chat");
 
                 mDocsButton.setEnabled(true);
             }
@@ -267,6 +269,36 @@ public class ChatActivity extends AppCompatActivity {
 
         switch(requestCode)
         {
+            case REQUEST_GOOGLE_PLAY_SERVICES:
+                if (resultCode != RESULT_OK) {
+                    Toast.makeText(ChatActivity.this,
+                            "This app requires Google Play Services. Please install " +
+                                    "Google Play Services on your device and relaunch this app.",Toast.LENGTH_SHORT).show();
+                } else {
+                    getResultsFromApi();
+                }
+                break;
+            case REQUEST_ACCOUNT_PICKER:
+                if (resultCode == RESULT_OK && data != null &&
+                        data.getExtras() != null) {
+                    String accountName =
+                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                    if (accountName != null) {
+                        SharedPreferences settings =
+                                getPreferences(Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = settings.edit();
+                        editor.putString(PREF_ACCOUNT_NAME, accountName);
+                        editor.apply();
+                        mCredential.setSelectedAccountName(accountName);
+                        getResultsFromApi();
+                    }
+                }
+                break;
+            case REQUEST_AUTHORIZATION:
+                if (resultCode == RESULT_OK) {
+                    getResultsFromApi();
+                }
+                break;
             case PICKFILE_RESULT_CODE:
                 if(resultCode == RESULT_OK)
                 {
@@ -278,7 +310,8 @@ public class ChatActivity extends AppCompatActivity {
                     mMessagesDatabaseReference.push().setValue(docMessage);
                     getResultsFromApi();
 
-                    /*File fileMetadata = new File();
+                    */
+/*File fileMetadata = new File();
                     fileMetadata.setName("new file.pdf");
                     FileContent mediaContent = new FileContent("application/pdf", file);
                     try {
@@ -289,7 +322,8 @@ public class ChatActivity extends AppCompatActivity {
                     catch(IOException e1)
                     {
 
-                    }*/
+                    }*//*
+
 
                     Toast.makeText(ChatActivity.this, filePath, Toast.LENGTH_SHORT).show();
 
@@ -360,7 +394,8 @@ public class ChatActivity extends AppCompatActivity {
         return null;
     }
 
-    /**
+    */
+/**
      * Get the value of the data column for this Uri. This is useful for
      * MediaStore Uris, and other file-based ContentProviders.
      *
@@ -369,7 +404,8 @@ public class ChatActivity extends AppCompatActivity {
      * @param selection (Optional) Filter used in the query.
      * @param selectionArgs (Optional) Selection arguments used in the query.
      * @return The value of the _data column, which is typically a file path.
-     */
+     *//*
+
     public static String getDataColumn(Context context, Uri uri, String selection,
                                        String[] selectionArgs) {
 
@@ -394,26 +430,32 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-    /**
+    */
+/**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
-     */
+     *//*
+
     public static boolean isExternalStorageDocument(Uri uri) {
         return "com.android.externalstorage.documents".equals(uri.getAuthority());
     }
 
-    /**
+    */
+/**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is DownloadsProvider.
-     */
+     *//*
+
     public static boolean isDownloadsDocument(Uri uri) {
         return "com.android.providers.downloads.documents".equals(uri.getAuthority());
     }
 
-    /**
+    */
+/**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is MediaProvider.
-     */
+     *//*
+
     public static boolean isMediaDocument(Uri uri) {
         return "com.android.providers.media.documents".equals(uri.getAuthority());
     }
@@ -525,10 +567,94 @@ public class ChatActivity extends AppCompatActivity {
 
     //google drive api code
     private void getResultsFromApi() {
-        if (mCredential.getSelectedAccountName() != null)
-        {
+        if (! isGooglePlayServicesAvailable()) {
+            acquireGooglePlayServices();
+        } else if (mCredential.getSelectedAccountName() == null) {
+            chooseAccount();
+        } else if (! isDeviceOnline()) {
+            Toast.makeText(ChatActivity.this, "No network connection available.", Toast.LENGTH_SHORT).show();
+        } else {
             new GetFilesListTask(mCredential).execute(false);
         }
+    }
+
+    @AfterPermissionGranted(REQUEST_PERMISSION_GET_ACCOUNTS)
+    private void chooseAccount() {
+        if (EasyPermissions.hasPermissions(
+                this, android.Manifest.permission.GET_ACCOUNTS)) {
+            String accountName = getPreferences(Context.MODE_PRIVATE)
+                    .getString(PREF_ACCOUNT_NAME, null);
+            if (accountName != null) {
+                mCredential.setSelectedAccountName(accountName);
+                getResultsFromApi();
+            } else {
+                // Start a dialog from which the user can choose an account
+                startActivityForResult(
+                        mCredential.newChooseAccountIntent(),
+                        REQUEST_ACCOUNT_PICKER);
+            }
+        } else {
+            // Request the GET_ACCOUNTS permission via a user dialog
+            EasyPermissions.requestPermissions(
+                    this,
+                    "This app needs to access your Google account (via Contacts).",
+                    REQUEST_PERMISSION_GET_ACCOUNTS,
+                    android.Manifest.permission.GET_ACCOUNTS);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        EasyPermissions.onRequestPermissionsResult(
+                requestCode, permissions, grantResults, this);
+    }
+
+    @Override
+    public void onPermissionsGranted(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    @Override
+    public void onPermissionsDenied(int requestCode, List<String> list) {
+        // Do nothing.
+    }
+
+    private boolean isDeviceOnline() {
+        ConnectivityManager connMgr =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
+
+    private boolean isGooglePlayServicesAvailable() {
+        GoogleApiAvailability apiAvailability =
+                GoogleApiAvailability.getInstance();
+        final int connectionStatusCode =
+                apiAvailability.isGooglePlayServicesAvailable(this);
+        return connectionStatusCode == ConnectionResult.SUCCESS;
+    }
+
+    private void acquireGooglePlayServices() {
+        GoogleApiAvailability apiAvailability =
+                GoogleApiAvailability.getInstance();
+        final int connectionStatusCode =
+                apiAvailability.isGooglePlayServicesAvailable(this);
+        if (apiAvailability.isUserResolvableError(connectionStatusCode)) {
+            showGooglePlayServicesAvailabilityErrorDialog(connectionStatusCode);
+        }
+    }
+
+    void showGooglePlayServicesAvailabilityErrorDialog(
+            final int connectionStatusCode) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        Dialog dialog = apiAvailability.getErrorDialog(
+                ChatActivity.this,
+                connectionStatusCode,
+                REQUEST_GOOGLE_PLAY_SERVICES);
+        dialog.show();
     }
 
     private String CreateFolder(String folderName)
@@ -603,7 +729,8 @@ public class ChatActivity extends AppCompatActivity {
             }
 
             //creating folder part
-            /*File fileMetadata = new File();
+            */
+/*File fileMetadata = new File();
             fileMetadata.setName("break out new");
             fileMetadata.setMimeType("application/vnd.google-apps.folder");
 
@@ -617,7 +744,8 @@ public class ChatActivity extends AppCompatActivity {
             {
                 e1.getStackTrace();
 
-            }*/
+            }*//*
+
 
             //Upload file part
             String folderId = "0B9Jv5YdikMcLcERsWVJqb2taUWs";
@@ -633,8 +761,45 @@ public class ChatActivity extends AppCompatActivity {
             return fileInfo;
         }
 
+        @Override
+        protected void onPreExecute() {
 
+            mProgressBar.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected void onPostExecute(List<String> output) {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            if (output == null || output.size() == 0) {
+                Toast.makeText(ChatActivity.this, "No results returned.", Toast.LENGTH_SHORT).show();
+            } else {
+                output.add(0, "Data retrieved using the Drive API:");
+                Toast.makeText(ChatActivity.this, TextUtils.join("\n", output), Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mProgressBar.setVisibility(View.INVISIBLE);
+            if (mLastError != null) {
+                if (mLastError instanceof GooglePlayServicesAvailabilityIOException) {
+                    showGooglePlayServicesAvailabilityErrorDialog(
+                            ((GooglePlayServicesAvailabilityIOException) mLastError)
+                                    .getConnectionStatusCode());
+                } else if (mLastError instanceof UserRecoverableAuthIOException) {
+                    startActivityForResult(
+                            ((UserRecoverableAuthIOException) mLastError).getIntent(),
+                            ChatActivity.REQUEST_AUTHORIZATION);
+                } else {
+                    Toast.makeText(ChatActivity.this, "The following error occurred:\n"
+                            + mLastError.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(ChatActivity.this, "Request cancelled.", Toast.LENGTH_SHORT).show();
+            }
+        }
 
 
     }
 }
+*/
